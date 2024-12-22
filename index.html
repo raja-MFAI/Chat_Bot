@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #chatbox {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 400px;
+        }
+        #messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        #user-input {
+            display: flex;
+        }
+        #input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #send {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <div id="messages"></div>
+        <div id="user-input">
+            <input type="text" id="input" placeholder="Type your message here..." />
+            <button id="send">Send</button>
+        </div>
+    </div>
+    <script>
+        const sendButton = document.getElementById('send');
+        const inputField = document.getElementById('input');
+        const messagesDiv = document.getElementById('messages');
+
+        // Initialize greeting message
+        const greetingMessage = document.createElement('div');
+        greetingMessage.textContent = "Bot: Hello! How can I assist you today?";
+        messagesDiv.appendChild(greetingMessage);
+
+        sendButton.onclick = async () => {
+            const userQuery = inputField.value;
+            if (!userQuery) return;
+
+            // Display user message
+            const userMessage = document.createElement('div');
+            userMessage.textContent = `You: ${userQuery}`;
+            messagesDiv.appendChild(userMessage);
+
+            // Send query to chatbot API
+            const response = await fetch('http://127.0.0.1:5000/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: userQuery }),
+            });
+            const data = await response.json();
+
+            // Display chatbot response
+            const botMessage = document.createElement('div');
+            if (data.response) {
+                botMessage.textContent = `Bot: ${data.response}`;
+            } else {
+                botMessage.textContent = `Bot: Sorry, I didn't understand that. Can you please specify a product?`;
+            }
+            messagesDiv.appendChild(botMessage);
+
+            // Clear input field
+            inputField.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll to the latest message
+        };
+    </script>
+</body>
+</html>
