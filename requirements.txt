@@ -6,5 +6,4 @@ transformers
 torch
 requests
 jmespath
-bson==0.5.10
 gunicorn
